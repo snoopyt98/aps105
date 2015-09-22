@@ -12,7 +12,8 @@
     <logicalFolder name="SourceFiles"
                    displayName="Source Files"
                    projectFiles="true">
-      <itemPath>Lab2.c</itemPath>
+      <itemPath>Lab2part1.c</itemPath>
+      <itemPath>Lab2part2.c</itemPath>
     </logicalFolder>
     <logicalFolder name="TestFiles"
                    displayName="Test Files"
@@ -36,7 +37,9 @@
       </toolsSet>
       <compileType>
       </compileType>
-      <item path="Lab2.c" ex="false" tool="0" flavor2="0">
+      <item path="Lab2part1.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="Lab2part2.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
     <conf name="Release" type="1">
@@ -59,7 +62,9 @@
           <developmentMode>5</developmentMode>
         </asmTool>
       </compileType>
-      <item path="Lab2.c" ex="false" tool="0" flavor2="0">
+      <item path="Lab2part1.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="Lab2part2.c" ex="false" tool="0" flavor2="0">
       </item>
     </conf>
   </confs>
