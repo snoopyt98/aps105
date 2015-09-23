@@ -1,7 +1,7 @@
 /* 
  * File:   Lab2part1.c
  * Author: Shizhang Yin
- *
+ * This is a program that calculates pobability of having hard attck.
  * Created on September 22, 2015, 11:40 AM
  */
 
