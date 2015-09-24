@@ -1,8 +1,13 @@
 /* 
  * File:   Lab2part1.c
- * Author: Shizhang Yin
- * This is a program that calculates pobability of having hard attck.
- * Created on September 22, 2015, 11:40 AM
+ * Author: Shizhang Yin (shizhang.yin@mail.utoronto.ca)
+ * Date: September 22, 2015
+ * Course: APS105
+ * 
+ * Summary of File:
+ * 
+ * This is a program that calculates pobability of having hard attck. It collects
+ * user input of age, doctor estimate, and BNTP value.
  */
 
 #include <stdio.h>

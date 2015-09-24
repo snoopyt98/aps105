@@ -1,8 +1,12 @@
 /* 
  * File:   Lab2part2.c
- * Author: Shizhang Yin
- *
- * Created on September 22, 2015, 11:40 AM
+ * Author: Shizhang Yin (shizhang.yin@mail.utoronto.ca)
+ * Date: September 24, 2015
+ * Course: APS105
+ * 
+ * Summary of File:
+ * 
+ * This is a program that calculates pobability of having hard attck.
  */
 
 /*
