@@ -16,18 +16,20 @@
 
 int main(void) // Main function with a integer return and no input
 {
-    int inputNumber1; 
-    int inputNumber2; //Declare variable inputNumber1 and inputNumber2
+    int inputNumber1; //Declare variable inputNumber1 and inputNumber2
+    int inputNumber2; 
+    
     printf("Enter First Number: ");
-    scanf("%d",&inputNumber1); // Get input from user and put it into inputNumber1
+    scanf("%d",&inputNumber1);
     printf("Enter Second Number: ");
-    scanf("%d",&inputNumber2); // Get input from user and put it into inputNumber2
+    scanf("%d",&inputNumber2); // Get input from user
     // All calculations are within prinf() function because they are simple
-    printf("Sum: %d\n",inputNumber1+inputNumber2); // Print the sum of two input Numbers
-    printf("Difference: %d\n",inputNumber1-inputNumber2); // Print the difference of two input Numbers
-    printf("Square of Number 1: %d\n",inputNumber1*inputNumber1); // Print the square of number 1
-    printf("Square of Number 2: %d\n",inputNumber2*inputNumber2); // Print the square of number 2
-    printf("Division: %d\n",inputNumber2/inputNumber1); // Print the division of two numbers
+    printf("Sum: %d\n",inputNumber1+inputNumber2); // Print result of calculations
+    printf("Difference: %d\n",inputNumber1-inputNumber2);
+    printf("Square of Number 1: %d\n",inputNumber1*inputNumber1);
+    printf("Square of Number 2: %d\n",inputNumber2*inputNumber2);
+    printf("Division: %d\n",inputNumber2/inputNumber1);
+    
     return (EXIT_SUCCESS); // Executed successfully
 }
 
