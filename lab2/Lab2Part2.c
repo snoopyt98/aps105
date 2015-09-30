@@ -14,8 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int main(void) {
-
+int main(void) 
+{
     int decValue = 0;
     int inputBits;
     int bitDig[4] = {0}; // declare array for the input(can be changed)
