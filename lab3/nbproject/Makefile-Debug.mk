@@ -35,7 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/Lab3part1.o
+	${OBJECTDIR}/Lab3part1.o \
+	${OBJECTDIR}/Lab3part2.o
 
 
 # C Compiler Flags
@@ -66,6 +67,11 @@ ${OBJECTDIR}/Lab3part1.o: Lab3part1.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
 	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Lab3part1.o Lab3part1.c
+
+${OBJECTDIR}/Lab3part2.o: Lab3part2.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} "$@.d"
+	$(COMPILE.c) -g -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Lab3part2.o Lab3part2.c
 
 # Subprojects
 .build-subprojects:

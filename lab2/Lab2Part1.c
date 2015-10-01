@@ -16,9 +16,9 @@
 int main(void) 
 {
     static const double DOC_EST = 1.5;
-    static const int PATIENT_AGE = 10;
-    static const double BNTP_DIV = 125.0;
-    static const int BNTP_MUL = 20;
+    static const double PATIENT_AGE = 10;
+    static const double BNTP_DIV = 125;
+    static const double BNTP_MUL = 20; // Declare constants
     
     double patientAge;
     double doctorEstimate;

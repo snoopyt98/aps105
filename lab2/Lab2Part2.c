@@ -14,6 +14,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int power(int, unsigned int); // declare function
+
 int main(void) 
 {
     int decValue = 0;
@@ -33,7 +35,7 @@ int main(void)
     }
     bitDig[bitDiglength - 1] = inputBits - modAdd; // put last number into array
 
-    for (j = 0; j < (bitDiglength); j++) // reduce the large # into single digits
+    for (j = 0; j < (bitDiglength); j++) // reduce the large #s into single digits
     {
         bitDig[j] = bitDig[j] / (power(10, j));
     }
