@@ -35,8 +35,8 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/Lab3part1.o \
-	${OBJECTDIR}/Lab3part2.o
+	${OBJECTDIR}/Lab3Part1.o \
+	${OBJECTDIR}/Lab3Part2.o
 
 
 # C Compiler Flags
@@ -63,15 +63,15 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/lab3: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/lab3 ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/Lab3part1.o: Lab3part1.c 
+${OBJECTDIR}/Lab3Part1.o: Lab3Part1.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Lab3part1.o Lab3part1.c
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Lab3Part1.o Lab3Part1.c
 
-${OBJECTDIR}/Lab3part2.o: Lab3part2.c 
+${OBJECTDIR}/Lab3Part2.o: Lab3Part2.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} "$@.d"
-	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Lab3part2.o Lab3part2.c
+	$(COMPILE.c) -O2 -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/Lab3Part2.o Lab3Part2.c
 
 # Subprojects
 .build-subprojects:
