@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const CONST_E=2.71828182845904524;
+static const int CONST_E=2.71828182845904524;
 double gaussFunc(double x, double spread);
 
 int main(void)
@@ -15,7 +15,7 @@ int main(void)
         scanf("%lf",&spreadNum);
     }
     while(spreadNum<=0);
-    do
+    for(;;)
     {
         printf("Please enter the number of rectangles (n): ");
         scanf("%d", &inputN);  
@@ -35,7 +35,6 @@ int main(void)
         printf("Integral of Gaussian with spread %.3f on [%.3f, %.3f] with n = %d is: %.3f\n", spreadNum, limitA, limitB, inputN, outResult);
         outResult=0;
     }
-    while(true);
 }
 
 double gaussFunc(double x, double spread)
