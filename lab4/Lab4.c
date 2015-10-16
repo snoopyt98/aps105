@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+const CONST_E=2.71828182845904524;
 double gaussFunc(double x, double spread);
 
 int main(void)
@@ -35,6 +36,6 @@ int main(void)
 double gaussFunc(double x, double spread)
 {
     double outArea;
-    outArea=pow(M_E, -(x*x)/spread);
+    outArea=pow(CONST_E, -(x*x)/spread);
     return outArea;
 }
