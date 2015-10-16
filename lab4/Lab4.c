@@ -17,7 +17,6 @@ int main(void)
     while(spreadNum<=0);
     do
     {
-        do
         printf("Please enter the number of rectangles (n): ");
         scanf("%d", &inputN);  
         if(inputN<1)
