@@ -17,8 +17,14 @@ int main(void)
     while(spreadNum<=0);
     do
     {
-        printf("Please enter the numbeer of rectangles (n): ");
+        do
+        printf("Please enter the number of rectangles (n): ");
         scanf("%d", &inputN);  
+        if(inputN<1)
+        {
+            printf("exit.");
+            return 0;
+        }
         printf("Enter the interval of integration (a b): ");
         scanf("%lf %lf", &limitA, &limitB);
         midX=limitA;
@@ -30,7 +36,7 @@ int main(void)
         printf("Integral of Gaussian with spread %.3f on [%.3f, %.3f] with n = %d is: %.3f\n", spreadNum, limitA, limitB, inputN, outResult);
         outResult=0;
     }
-    while(inputN>=1);
+    while(true);
 }
 
 double gaussFunc(double x, double spread)
