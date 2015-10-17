@@ -21,7 +21,7 @@ int main(void)
         scanf("%d", &inputN);  
         if(inputN<1)
         {
-            printf("exiting.");
+            printf("exiting.\n");
             return 0;
         }
         do
@@ -29,16 +29,16 @@ int main(void)
             printf("Enter the interval of integration (a b): ");
             scanf("%lf %lf", &limitA, &limitB);
             if(limitA>limitB)
-                printf("Invalid interval!");
+                printf("Invalid interval!\n");
         }
         while(limitA>limitB);
-        midX=limitA;
+        midX=limitA+((limitB-limitA)/(2*inputN));
         for(i=0;i<inputN;i++)
         {
-            midX=((limitB-limitA)/inputN)+midX;
+            midX=((limitB-limitA)/(inputN))+midX;
             outResult=outResult+gaussFunc(midX,spreadNum)*((limitB-limitA)/inputN);
         }
-        printf("Integral of Gaussian with spread %.3f on [%.3f, %.3f] with n = %d is: %.3f", spreadNum, limitA, limitB, inputN, outResult);
+        printf("Integral of Gaussian with spread %.3f on [%.3f, %.3f] with n = %d is: %.3f\n", spreadNum, limitA, limitB, inputN, outResult);
         outResult=0;
     }
 }
