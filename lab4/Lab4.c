@@ -2,8 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 
-static const int CONST_E=2.71828182845904524;//declare constant e
-
 double gaussFunc(double x, double spread);//declare function gaussFunc()
 
 int main(void)
