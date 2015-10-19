@@ -36,7 +36,6 @@ int main(void)
         {
             if(i!=0)
                 midX=((limitB-limitA)/(inputN))+midX;//find each midX
-            printf("%f,%f",midX,gaussFunc(midX,spreadNum));
             outResult=outResult+gaussFunc(midX,spreadNum)*((limitB-limitA)/inputN);//calculate area and add together
         }
         printf("Integral of Gaussian with spread %.3f on [%.3f, %.3f] with n = %d is: %.3f\n", spreadNum, limitA, limitB, inputN, outResult);//print result
