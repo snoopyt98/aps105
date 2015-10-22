@@ -81,14 +81,12 @@ int findLength(char *inputArrPtr, int *inputIntPtr)
         {
             i++;
         }
-    return i;    
+        return i;    
     }
     if(inputArrPtr==0&&inputIntPtr!=0)
     {
         int j=0;
         while(*(inputIntPtr+j)!='\0')
-        {
             j++;
-        }
     }
 }
