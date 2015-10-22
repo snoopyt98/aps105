@@ -116,7 +116,7 @@ int findLength(const char *DNAPtr, char *inputArrPtr, int *inputIntPtr)//functio
         int i = 0;
         while (*(DNAPtr + i) != '\0')
             i++;
-        return i;
+        return i;    
     }
 
     if (DNAPtr == 0 && inputArrPtr != 0 && inputIntPtr == 0) //user input
