@@ -27,12 +27,3 @@
 *.i*86
 *.x86_64
 *.hex
-
-# Debug files
-*.dSYM/
-/lab3/dist/
-/lab3/build/
-/test/build/
-/test/dist/
-/find/build/
-/find/dist/
