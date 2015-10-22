@@ -116,21 +116,11 @@ int findLength(const char *DNAPtr, char *inputArrPtr, int *inputIntPtr)//functio
         int i = 0;
         while (*(DNAPtr + i) != '\0')
             i++;
-<<<<<<< HEAD
-        }
         return i;    
-=======
-        return i;
->>>>>>> 4f9e07b8669576fe6a77db7b6e27e1c9c6d80508
     }
 
     if (DNAPtr == 0 && inputArrPtr != 0 && inputIntPtr == 0) //user input
     {
-<<<<<<< HEAD
-        int j=0;
-        while(*(inputIntPtr+j)!='\0')
-            j++;
-=======
         int j = 0;
         while (*(inputArrPtr + j) != '\0')
             j++;
@@ -143,6 +133,5 @@ int findLength(const char *DNAPtr, char *inputArrPtr, int *inputIntPtr)//functio
         while (*(inputIntPtr + k) != '\0')
             k++;
         return k;
->>>>>>> 4f9e07b8669576fe6a77db7b6e27e1c9c6d80508
     }
 }
