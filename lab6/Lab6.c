@@ -3,7 +3,7 @@
 #include <stdbool.h>
 
 static const int MAX_BOARD_SIZE=26;
-int DELTA[8][2]={-1,-1,-1,0,-1,1,0,-1,0,1,1,-1,1,0,1,1};
+static const int DELTA[8][2]={-1,-1,-1,0,-1,1,0,-1,0,1,1,-1,1,0,1,1};
 
 void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
