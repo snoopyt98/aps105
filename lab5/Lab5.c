@@ -32,12 +32,10 @@ int main(void)
 {
     for (;;)
     {
-
         int i;
         char input[100] = {0};
         int result[100] = {0};
 
-        askInput(input);
         if (findDNA(&DNA[0], &input[0], result, 0)) 
         {
             for (i = 0; i < findLength(DNA, 0, 0); i++) 
@@ -46,7 +44,7 @@ int main(void)
                     printf("Match of search sequence found at element %d\n", i);
 
             }
-        }
+        }        
     }
 }
 
@@ -54,6 +52,7 @@ void askInput(char *inputPtr)//function that takes user input
 {
 
     int lengthDNA, i, j, k;
+    char waste;
 
     printf("Enter length of DNA sequence to match: ");
     scanf(" %d", &lengthDNA);
