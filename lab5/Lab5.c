@@ -37,13 +37,13 @@ int main(void)
         char input[100] = {0};
         int result[100] = {0};
 
-        askInput(input);
+        askInput(input);//input func
         if (findDNA(&DNA[0], &input[0], result, 0)) 
         {
             for (i = 0; i < findLength(DNA, 0, 0); i++) 
             {
                 if (result[i] == findLength(0, &input[0], 0))
-                    printf("Match of search sequence found at element %d\n", i);
+                    printf("Match of search sequence found at element %d\n", i);//output result
 
             }
         }
