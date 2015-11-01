@@ -28,7 +28,7 @@ int main(void)
     return 0;
 }
 
-void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//initialize stardard starting board configuration
 {
     int i,j,k,m;
     for(i=0;i<MAX_BOARD_SIZE;i++)
@@ -48,7 +48,7 @@ void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
     printBoard(board,n);
 }
 
-void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//print current board
 {
     int i,j,k;
     printf("  ");
@@ -64,7 +64,7 @@ void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
     }
     
 }
-void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//get config and change the board
 {
     int i,j;
     char inputLine[3]={0};
