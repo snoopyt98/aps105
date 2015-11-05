@@ -16,6 +16,7 @@ char computerColour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
+void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 
 int main(void)
 {
@@ -236,7 +237,9 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
     int i,j,counter=0;
     int temp[3];
     int bestMove[3]={0};
-    for(i=0;i<n;i++)
+    int minCase[3];
+    reduceMove(board,n,colour,minCase);
+    /*for(i=0;i<n;i++)
     {
         for(j=0;j<n;j++)
         {
@@ -250,9 +253,57 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
                 bestMove[2]=temp[2];
             }
         }
-    }
-    moveFlip(board,n,bestMove[0]+'a',bestMove[1]+'a',colour);
+    }*/
+    moveFlip(board,n,minCase[0]+'a',minCase[1]+'a',colour);
+    //moveFlip(board,n,bestMove[0]+'a',bestMove[1]+'a',colour);
     printf("Computer places %c at %c%c.\n",colour,bestMove[0]+'a',bestMove[1]+'a');
+}
+
+void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, char* minCase)
+{
+    int i,j,k,m,counter;
+    int temp[3];
+    int minCase[3]={0,0,676};
+    char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
+    memcpy(tempBoard,board,sizeof(char)*MAX_BOARD_SIZE*MAX_BOARD_SIZE);
+
+
+    char bwType;
+    if(colour=='W')
+        bwType='B';
+    else if(colour=='B')
+        bwType='W';
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            if(legalCases(tempBoard,i+'a',j+'a',colour,n)>0)
+            {
+                counter=0;
+                moveFlip(tempBoard,n,i+'a',j+'a',colour);
+                for(k=0;k<n;k++)
+                {
+                    for(m=0;m<n;m++)
+                    {
+                        if(legalCases(tempBoard,k+'a',m+'a',bwType)>0)
+                        {
+                            counter++;
+                        }
+                    }
+                }
+                temp[0]=i;
+                temp[1]=j;
+                temp[2]=counter;
+                if(temp[2]<minCase[2])
+                {
+                    minCase[0]=temp[0];
+                    minCase[1]=temp[1];
+                    minCase[2]=temp[2];
+                }
+            }
+        }
+    }
+    return minCase;
 }
 
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
