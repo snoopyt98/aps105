@@ -5,6 +5,7 @@
 static const int MAX_BOARD_SIZE=26;
 static const int DELTA[8][2]={-1,-1,-1,0,-1,1,0,-1,0,1,1,-1,1,0,1,1};
 
+//declare functions
 void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
@@ -41,7 +42,7 @@ void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//initial
         for(m=0;m<n;m++)
             board[k][m]='U';
     }
-    board[(n/2)-1][(n/2-1)]='W';
+    board[(n/2)-1][(n/2-1)]='W';//set up defult board config
     board[(n/2)-1][n/2]='B';
     board[n/2][(n/2)-1]='B';
     board[n/2][n/2]='W';
@@ -52,13 +53,13 @@ void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//print curren
 {
     int i,j,k;
     printf("  ");
-    for(i=0;i<n;i++)
+    for(i=0;i<n;i++)//print label
         printf("%c", 'a'+i);
     printf("\n");
-    for(j=0;j<n;j++)
+    for(j=0;j<n;j++)//row++
     {
         printf("%c ",'a'+j);
-        for(k=0;k<n;k++)
+        for(k=0;k<n;k++)//col++
             printf("%c",board[j][k]);
         printf("\n");
     }
@@ -74,7 +75,7 @@ void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//get config 
     {
         for(i=0;i<3;i++)
             scanf(" %c", &inputLine[i]);    
-        if((inputLine[0]=='!')&&(inputLine[1]=='!')&&(inputLine[2]=='!'))
+        if((inputLine[0]=='!')&&(inputLine[1]=='!')&&(inputLine[2]=='!'))//find the end of the input
             inputState=false;
         else
             board[inputLine[1]-'a'][inputLine[2]-'a']=inputLine[0];
@@ -82,7 +83,7 @@ void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//get config 
     printBoard(board,n);
 }
 
-void legalMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+void legalMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//find the legal moves on the current board
 {
     char a,b,c,d;
     printf("Available moves for W: \n");
@@ -119,7 +120,7 @@ bool legalCases(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], char row, char col ,
         return false;
 }
 
-bool positionInBounds(int N, char row, char col)
+bool positionInBounds(int N, char row, char col)//check if the input location belongs to the board
 {
     if((row>='a')&&(row<='a'+N-1)&&(col>='a')&&(col<='a'+N-1))
         return true;
@@ -128,7 +129,7 @@ bool positionInBounds(int N, char row, char col)
 }
 
 
-bool checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, char row, char col, char colour, int deltaRow, int deltaCol)
+bool checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, char row, char col, char colour, int deltaRow, int deltaCol)//check legal in one direc
 {
     if(board[row-'a'][col-'a']!='U')
         return false;
@@ -144,17 +145,17 @@ bool checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, ch
             return false;
         for(i=0;positionInBounds(N,row+deltaRow,col+deltaCol);i++)
         {
-            if(board[row-'a'+deltaRow][col-'a'+deltaCol]==bwType)
+            if(board[row-'a'+deltaRow][col-'a'+deltaCol]==bwType)//BW* or WB* case
             {
                 counter++;
                 row=row+deltaRow;
                 col=col+deltaCol;
             }
-            else if(board[row-'a'+deltaRow][col-'a'+deltaCol]==colour && counter<1)
+            else if(board[row-'a'+deltaRow][col-'a'+deltaCol]==colour && counter<1)//BB or WW case
                 return false;
-            else if(board[row-'a'+deltaRow][col-'a'+deltaCol]==colour && counter>=1)
+            else if(board[row-'a'+deltaRow][col-'a'+deltaCol]==colour && counter>=1)//B*B or W*W case
                 return true;
-            else if(board[row-'a'+deltaRow][col-'a'+deltaCol]=='U')
+            else if(board[row-'a'+deltaRow][col-'a'+deltaCol]=='U')//BU or WU case
                 return false;
         } 
         if(board[row-'a'][col-'a']==bwType && counter>=1)
@@ -162,7 +163,7 @@ bool checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, ch
     }    
 }
 
-void makeMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+void makeMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//user make move and update the move
 {
     int i;
     bool caseState=false;
@@ -170,7 +171,7 @@ void makeMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
     printf("Enter a move: \n");
     for(i=0;i<3;i++)
         scanf(" %c", &userInput[i]);
-    if(positionInBounds(n, userInput[1], userInput[2]))
+    if(positionInBounds(n, userInput[1], userInput[2]))//check if input is inbound
     {
         if(legalCases(board, userInput[1], userInput[2], userInput[0], n))
             caseState=true;
@@ -190,7 +191,7 @@ void makeMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
     printBoard(board, n);
 }
 
-void moveFlip(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char col, char colour)
+void moveFlip(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char col, char colour)//flip possibles in all direction
 {
     int i,j,counter=0;
     char bwType;
@@ -200,27 +201,27 @@ void moveFlip(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char 
         bwType='B';
     else if(colour=='B')
         bwType='W';
-    for(i=0;i<8;i++)
+    for(i=0;i<8;i++)//loop for all 8 cases for each point
     {
         rowTemp=row;
         colTemp=col;
         counter=0;
         while(positionInBounds(n,rowTemp+DELTA[i][0],colTemp+DELTA[i][1]))
         {
-            if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==bwType)
+            if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==bwType)//BW or WB case
             {
                 counter++;
                 rowTemp=rowTemp+DELTA[i][0];
                 colTemp=colTemp+DELTA[i][1];
             }            
-            else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']=='U')
+            else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']=='U')//BU or WU case
                 break;
-            else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==colour&&counter<1)
+            else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==colour&&counter<1)//BB or WW case
                 break;
-            else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==colour&&counter>=1)
+            else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==colour&&counter>=1)//B*B or W*W caes
             {
                 for(j=0;j<counter;j++)
-                    board[rowTemp-j*DELTA[i][0]-'a'][colTemp-j*DELTA[i][1]-'a']=colour;
+                    board[rowTemp-j*DELTA[i][0]-'a'][colTemp-j*DELTA[i][1]-'a']=colour;// flip
                 break;
             }
         }
