@@ -71,11 +71,7 @@ void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//print curren
         printf("%c", 'a'+i);
     printf("\n");
     for(j=0;j<n;j++)//row++
-  program will be n, giving the size of the n × n board. You may
-e: Command not found.
-[yinshizh@p102 lab6]$ assume that the size of n will be even and will never be larger than 26, and should
-assume: Command not found.
-[yinshizh@p102 lab6]$ declare a static 2-dimensional array. Your program should init   {
+    {
         printf("%c ",'a'+j);
         for(k=0;k<n;k++)//col++
             printf("%c",board[j][k]);
@@ -164,11 +160,6 @@ bool checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, ch
         for(i=0;positionInBounds(N,row+deltaRow,col+deltaCol);i++)
         {
             if(board[row-'a'+deltaRow][col-'a'+deltaCol]==bwType)//BW* or WB* case
-all be n, giving the size of the n × n board. You may
-e: Command not found.
-[yinshizh@p102 lab6]$ assume that the size of n will be even and will never be larger than 26, and should
-assume: Command not found.
-[yinshizh@p102 lab6]$ declare a static 2-dimensional array. Your program should init>>>>>> 29e8a069b0fbf3cdc9feafee72161f85393673d2
             {
                 counter++;
                 row=row+deltaRow;

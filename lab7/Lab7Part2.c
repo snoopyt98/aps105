@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 static const int MAX_BOARD_SIZE=26;
 static const int DELTA[8][2]={-1,-1,-1,0,-1,1,0,-1,0,1,1,-1,1,0,1,1};
@@ -16,7 +17,9 @@ char computerColour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
-void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
+void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int *minCase);
+double gameStage(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE],int n);
+bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE],int n, char row , char col, char colour);
 
 int main(void)
 {
@@ -42,10 +45,15 @@ void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//initial
         for(m=0;m<n;m++)
             board[k][m]='U';
     }
-    board[(n/2)-1][(n/2-1)]='W';
-    board[(n/2)-1][n/2]='B';
-    board[n/2][(n/2)-1]='B';
-    board[n/2][n/2]='W';
+    //board[(n/2)-1][(n/2-1)]='W';
+    //board[(n/2)-1][n/2]='B';
+    //board[n/2][(n/2)-1]='B';
+    //board[n/2][n/2]='W';
+    
+    board[(n/2)-1][(n/2-1)]='B';//only for testing
+    board[(n/2)-1][n/2]='W';
+    board[n/2][(n/2)-1]='W';
+    board[n/2][n/2]='B';
 }
 
 void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//print current board
@@ -237,8 +245,11 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
     int i,j,counter=0;
     int temp[3];
     int bestMove[3]={0};
-    int minCase[3];
-    reduceMove(board,n,colour,minCase);
+    int minCase[3]={0,0,676};
+    //if(gameStage<0.2)//eliminate other player movement
+    {
+        reduceMove(board,n,colour,minCase);
+    }
     /*for(i=0;i<n;i++)
     {
         for(j=0;j<n;j++)
@@ -256,14 +267,13 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
     }*/
     moveFlip(board,n,minCase[0]+'a',minCase[1]+'a',colour);
     //moveFlip(board,n,bestMove[0]+'a',bestMove[1]+'a',colour);
-    printf("Computer places %c at %c%c.\n",colour,bestMove[0]+'a',bestMove[1]+'a');
+    printf("Computer places %c at %c%c.\n",colour,minCase[0]+'a',minCase[1]+'a');
 }
 
-void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, char* minCase)
+void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* minCase)
 {
     int i,j,k,m,counter;
     int temp[3];
-    int minCase[3]={0,0,676};
     char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     memcpy(tempBoard,board,sizeof(char)*MAX_BOARD_SIZE*MAX_BOARD_SIZE);
 
@@ -285,25 +295,25 @@ void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, 
                 {
                     for(m=0;m<n;m++)
                     {
-                        if(legalCases(tempBoard,k+'a',m+'a',bwType)>0)
+                        if(legalCases(tempBoard,k+'a',m+'a',bwType,n)>0)
                         {
                             counter++;
                         }
                     }
                 }
+                memcpy(tempBoard,board,sizeof(char)*MAX_BOARD_SIZE*MAX_BOARD_SIZE);
                 temp[0]=i;
                 temp[1]=j;
                 temp[2]=counter;
                 if(temp[2]<minCase[2])
                 {
-                    minCase[0]=temp[0];
-                    minCase[1]=temp[1];
-                    minCase[2]=temp[2];
+                    *minCase=temp[0];
+                    *(minCase+1)=temp[1];
+                    *(minCase+2)=temp[2];
                 }
             }
         }
     }
-    return minCase;
 }
 
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
@@ -337,4 +347,38 @@ bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
     }
     else
         return true;
+}
+
+double gameStage(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+{
+    double  maxCount= n*n;
+    int i,j,tempCount=0;
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            if(board[i][j]!='U')
+                tempCount++;
+        }
+    }
+    return tempCount/maxCount;
+}
+
+int cornerTaken()
+{
+
+}
+
+bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE],int n, char row , char col, char colour)
+{
+    //corner [a][a] [a][n-1] [n-1][a] [n-1][n-1]
+    if((row=='a'&&col=='a')||(row=='a'&&col=='a'+n-1)||(row=='a'+n-1&&col=='a')||(row=='a'+n-a&&col=='a'+n-1))
+        return true;
+    else
+        return false;
+}
+
+bool enermyCorner()
+{
+
 }
