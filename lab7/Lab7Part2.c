@@ -235,7 +235,7 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
 {
     int i,j,counter=0;
     int temp[3];
-    int bestMove[3]={0};
+    int bestMove[3]={1,1,1};
     for(i=0;i<n;i++)
     {
         for(j=0;j<n;j++)
@@ -243,7 +243,7 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
             temp[0]=i;
             temp[1]=j;
             temp[2]=legalCases(board,i+'a',j+'a',colour,n);
-            if(temp[2]<bestMove[2])
+            if(temp[2]<=bestMove[2]&&temp[2]>0)
             {
                 bestMove[0]=temp[0];
                 bestMove[1]=temp[1];
