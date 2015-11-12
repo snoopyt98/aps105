@@ -1,9 +1,23 @@
+/*
+ * File:   Lab6.c
+ * Author: Shizhang Yin (shizhang.yin@mail.utoronto.ca)
+ * Date: October 30, 2015
+ * Course: APS105
+ *
+ * Summary of File:
+ *
+ * This program is part of the the reversi game. It takes user's board configuration
+ * and output the possible moves for the user. It also allows the user to make one
+ * move and the program will determine if the move is legal and flip the board
+ * accordingly.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-static const int MAX_BOARD_SIZE=26;
-static const int DELTA[8][2]={-1,-1,-1,0,-1,1,0,-1,0,1,1,-1,1,0,1,1};
+static const int MAX_BOARD_SIZE=26;//board size constant
+static const int DELTA[8][2]={-1,-1,-1,0,-1,1,0,-1,0,1,1,-1,1,0,1,1};//array for all eight directions
 
 //declare functions
 void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
@@ -22,7 +36,7 @@ int main(void)
     int boardSize;
     printf("Enter the board dimension: ");
     scanf("%d",&boardSize);
-    boardInitialize(board,boardSize);    
+    boardInitialize(board,boardSize);
     boardConfig(board,boardSize);
     legalMove(board,boardSize);
     makeMove(board,boardSize);
@@ -63,7 +77,7 @@ void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//print curren
             printf("%c",board[j][k]);
         printf("\n");
     }
-    
+
 }
 void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//get config and change the board
 {
@@ -74,12 +88,12 @@ void boardConfig(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//get config 
     while(inputState==true)
     {
         for(i=0;i<3;i++)
-            scanf(" %c", &inputLine[i]);    
+            scanf(" %c", &inputLine[i]);
         if((inputLine[0]=='!')&&(inputLine[1]=='!')&&(inputLine[2]=='!'))//find the end of the input
             inputState=false;
         else
             board[inputLine[1]-'a'][inputLine[2]-'a']=inputLine[0];
-    }   
+    }
     printBoard(board,n);
 }
 
@@ -94,7 +108,7 @@ void legalMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//find the lega
             if(legalCases(board,a,b,'W',n))
                 printf("%c%c\n",a,b);
         }
-    }    
+    }
     printf("Available moves for B: \n");
     for(c='a';c<'a'+n;c++)
     {
@@ -103,7 +117,7 @@ void legalMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//find the lega
            if(legalCases(board,c,d,'B',n))
                 printf("%c%c\n", c,d);
        }
-    }    
+    }
 }
 
 bool legalCases(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], char row, char col , char bwType, int n)
@@ -157,10 +171,10 @@ bool checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, ch
                 return true;
             else if(board[row-'a'+deltaRow][col-'a'+deltaCol]=='U')//BU or WU case
                 return false;
-        } 
+        }
         if(board[row-'a'][col-'a']==bwType && counter>=1)
-            return false;       
-    }    
+            return false;
+    }
 }
 
 void makeMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//user make move and update the move
@@ -213,7 +227,7 @@ void moveFlip(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char 
                 counter++;
                 rowTemp=rowTemp+DELTA[i][0];
                 colTemp=colTemp+DELTA[i][1];
-            }            
+            }
             else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']=='U')//BU or WU case
                 break;
             else if(board[rowTemp+DELTA[i][0]-'a'][colTemp+DELTA[i][1]-'a']==colour&&counter<1)//BB or WW case
@@ -225,6 +239,5 @@ void moveFlip(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char 
                 break;
             }
         }
-    } 
+    }
 }
-
