@@ -2,12 +2,13 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <math.h>
 #include <time.h>
 
 static const int MAX_BOARD_SIZE = 26;
 static const int DELTA[8][2] = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
 
-static const int INFINITY = 1000000;//for alpha beta
+//static const int INFINITY = 1000000;//for alpha beta
 /*
      a b c d e f g h
    1 - C B A A B C -
@@ -65,7 +66,7 @@ int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colou
 void boardCount(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* boardNum);
 void generateScoreboard(int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
-double alphaBeta(int depth, double alpha, double beta, bool mySelf, char colour, char opColour);
+double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n);
 
 int main(void)
 {
@@ -359,14 +360,7 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
     int minCase[3] = {0, 0, 676};
     char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     generateScoreboard(scoreBoard, n);
-    //boardCount(board, n, colour, boardNum);
-    //generateScoreboard(scoreBoard, n);
-    //if(gameStage<0.2)//eliminate other player movement
-    //{
-    //reduceMove(board, n, colour, minCase);
-    //}
-    //moveFlip(board, n, minCase[0] + 'a', minCase[1] + 'a', colour);
-    //printf("Moves with their score:\n");
+    //printf("%lf\n",alphaBeta(2,-1000000, 1000000, true, 'B', 'W', n));
     for( i = 0; i < n; i++ )
     {
         for( j = 0; j < n; j++ )
@@ -389,6 +383,9 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
             }
         }
     }
+    memcpy(tempBoard, board, sizeof( char ) * MAX_BOARD_SIZE * MAX_BOARD_SIZE);
+    printf("\n");
+    printf("%lf\n", alphaBeta(tempBoard, scoreBoard, 2, -1000000, 1000000, true, 'B', 'W', n));
     moveFlip(board, n, bestMove[0] + 'a', bestMove[1] + 'a', colour);
     printf("Computer places %c at %c%c.\n", colour, bestMove[0] + 'a', bestMove[1] + 'a');
 }
@@ -790,11 +787,8 @@ double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int 
     return score;
 }
 
-double alphaBeta(int depth, double alpha, double beta, bool mySelf, char colour, char opColour)
+double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n)
 {
-    char tempBoard[26][26];
-    int scoreBoard[26][26];
-    int n;
     double bestValue;
     if( depth == 0 )
     {
@@ -804,11 +798,14 @@ double alphaBeta(int depth, double alpha, double beta, bool mySelf, char colour,
     {
         int i, j = 0, childValue;
         bestValue = alpha;
+        int movePosition[8][3];
         unsigned int moveList[676][2] = {0};
         for( i = 0; i < availableMoves(tempBoard, n, colour, moveList, true); i++ )
         {
-            moveFlip(tempBoard, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
-            childValue = alphaBeta(depth - 1, bestValue, beta, false, opColour, colour);
+            flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n);
+            bestValue = fmax(bestValue, childValue);
+            unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
             if( beta <= bestValue )
             {
                 break;
@@ -820,11 +817,14 @@ double alphaBeta(int depth, double alpha, double beta, bool mySelf, char colour,
     {
         int i, j = 0, childValue;
         bestValue = beta;
+        int movePosition[8][3];
         unsigned int moveList[676][2] = {0};
         for( i = 0; i < availableMoves(tempBoard, n, opColour, moveList, true); i++ )
         {
-            moveFlip(tempBoard, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
-            childValue = alphaBeta(depth - 1, alpha, bestValue, true, colour, opColour);
+            flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
+            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n);
+            bestValue = fmin(bestValue, childValue);
+            unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
             if( alpha >= bestValue )
             {
                 break;
