@@ -62,7 +62,7 @@ bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* minCase);
 double gameStage(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char col, char colour);
-int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, unsigned int moveList[676][2], bool outputList);
+int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int moveList[676][2], bool outputList);
 void boardCount(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* boardNum);
 void generateScoreboard(int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
@@ -304,14 +304,14 @@ void unflip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][
         opColour = 'W';
     else if( colour == 'W' )
         opColour = 'B';
-    tempBoard[row][col] = 'U';
+    tempBoard[row - 'a'][col - 'a'] = 'U';
     for( i = 0; i < 8; i++ )
     {
         if( movePosition[i][2] != 0 )
         {
-            for( j = 0; j < movePosition[i][2]; j++ )
+            for( j = 1; j <= movePosition[i][2]; j++ )
             {
-                tempBoard[row - 'a' + movePosition[i][0]][col - 'a' + movePosition[i][1]] == opColour;
+                tempBoard[row - 'a' + j * movePosition[i][0]][col - 'a' + j * movePosition[i][1]] = opColour;
             }
         }
     }
@@ -484,7 +484,7 @@ bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, cha
         return false;
 }
 
-int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, unsigned int moveList[676][2], bool outputList )
+int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int moveList[676][2], bool outputList )
 {
     int i, j, k, counter = 0;
     for( i = 0; i < n; i++ )
@@ -796,16 +796,27 @@ double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[
     }
     else if( mySelf )
     {
-        int i, j = 0, childValue;
+        int i, j = 0;
+        double childValue;
         bestValue = alpha;
         int movePosition[8][3];
-        unsigned int moveList[676][2] = {0};
+        int moveList[676][2] = {0};
+        for( i = 0; i < 676; i++ )
+        {
+            for( j = 0; j < 2; j++ )
+            {
+                moveList[i][j] = -1;
+            }
+        }
         for( i = 0; i < availableMoves(tempBoard, n, colour, moveList, true); i++ )
         {
-            flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
-            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n);
-            bestValue = fmax(bestValue, childValue);
-            unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+            if( moveList[i][0] >= 0 && moveList[i][1] >= 0 )
+            {
+                flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+                childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n);
+                bestValue = fmax(bestValue, childValue);
+                unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+            }
             if( beta <= bestValue )
             {
                 break;
@@ -815,16 +826,27 @@ double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[
     }
     else
     {
-        int i, j = 0, childValue;
+        int i, j = 0;
+        double childValue;
         bestValue = beta;
-        int movePosition[8][3];
-        unsigned int moveList[676][2] = {0};
+        int movePosition[8][3] = {0};
+        int moveList[676][2] = {0};
+        for( i = 0; i < 676; i++ )
+        {
+            for( j = 0; j < 2; j++ )
+            {
+                moveList[i][j] = -1;
+            }
+        }
         for( i = 0; i < availableMoves(tempBoard, n, opColour, moveList, true); i++ )
         {
-            flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
-            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n);
-            bestValue = fmin(bestValue, childValue);
-            unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
+            if( moveList[i][0] >= 0 && moveList[i][1] >= 0 )
+            {
+                flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
+                childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n);
+                bestValue = fmin(bestValue, childValue);
+                unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
+            }
             if( alpha >= bestValue )
             {
                 break;
