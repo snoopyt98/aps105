@@ -428,12 +428,13 @@ void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, 
 
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
 {
-    int i, j, counterB = 0, counterW = 0, result = 0;
+    int i, j, counterB = 0, counterW = 0, resultC = 0, resultO = 0;
     for( i = 0; i < n; i++ )
     {
         for( j = 0; j < n; j++ )
         {
-            result = result + legalCases(board, i + 'a', j + 'a', colour, n);
+            resultC = resultC + legalCases(board, i + 'a', j + 'a', colour, n);
+            resultO = resultO + legalCases(board, i + 'a', j + 'a', opColour(colour), n);
             if( board[i][j] == 'B' )
                 counterB++;
             else if( board[i][j] == 'W' )
@@ -450,7 +451,17 @@ bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
             printf("W player wins.\n");
         exit(0);
     }
-    else if( result == 0 )//no valid move
+    else if( resultC == 0 && resultO == 0 )
+    {
+        if( counterB == counterW )
+            printf("Draw!\n");
+        else if( counterB > counterW )
+            printf("B player wins.\n");
+        else if( counterW > counterB )
+            printf("W player wins.\n");
+        exit(0);
+    }
+    else if( resultC == 0 )//no valid move
     {
         printf("%c player has no valid move.\n", colour);
         return false;

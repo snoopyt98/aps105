@@ -5,10 +5,12 @@
 #include <math.h>
 #include <time.h>
 
+static const int MAX_DEPTH = 1;
+
 static const int MAX_BOARD_SIZE = 26;
 static const int DELTA[8][2] = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
 
-//static const int INFINITY = 1000000;//for alpha beta
+//static const int INFINITY = 1000000000;//for alpha beta
 /*
      a b c d e f g h
    1 - C B A A B C -
@@ -66,7 +68,7 @@ int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colou
 void boardCount(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* boardNum);
 void generateScoreboard(int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
-double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n);
+double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n, char bestMove[2]);
 
 int main(void)
 {
@@ -262,6 +264,11 @@ void moveFlip(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char 
 
 void flip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][3], int n, char row, char col, char colour)
 {
+    char opColour;
+    if( colour == 'B' )
+        opColour = 'W';
+    else if( colour == 'W' )
+        opColour = 'B';
     int i, j, counter = 0;
     char rowTemp;
     char colTemp;
@@ -273,7 +280,7 @@ void flip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][3]
         counter = 0;
         while( positionInBounds(n, rowTemp + DELTA[i][0], colTemp + DELTA[i][1]))
         {
-            if( tempBoard[rowTemp + DELTA[i][0] - 'a'][colTemp + DELTA[i][1] - 'a'] == opColour(colour) )
+            if( tempBoard[rowTemp + DELTA[i][0] - 'a'][colTemp + DELTA[i][1] - 'a'] == opColour )
             {
                 counter++;
                 rowTemp = rowTemp + DELTA[i][0];
@@ -304,14 +311,14 @@ void unflip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][
         opColour = 'W';
     else if( colour == 'W' )
         opColour = 'B';
-    tempBoard[row-'a'][col-'a'] = 'U';
+    tempBoard[row - 'a'][col - 'a'] = 'U';
     for( i = 0; i < 8; i++ )
     {
         if( movePosition[i][2] != 0 )
         {
             for( j = 1; j <= movePosition[i][2]; j++ )
             {
-                tempBoard[row -'a' + j*movePosition[i][0]][col - 'a' + j*movePosition[i][1]] = opColour;
+                tempBoard[row - 'a' + j * movePosition[i][0]][col - 'a' + j * movePosition[i][1]] = opColour;
             }
         }
     }
@@ -356,38 +363,16 @@ void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour
     int i, j, counter = 0;
     int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     double temp[3] = {0};
-    int bestMove[3] = {0, 0, -100000000};
+    char bestMove[2] = {0};
     int minCase[3] = {0, 0, 676};
     char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     generateScoreboard(scoreBoard, n);
     //printf("%lf\n",alphaBeta(2,-1000000, 1000000, true, 'B', 'W', n));
-    for( i = 0; i < n; i++ )
-    {
-        for( j = 0; j < n; j++ )
-        {
-            if( legalCases(board, i + 'a', j + 'a', 'B', n) > 0 )
-            {
-                memcpy(tempBoard, board, sizeof( char ) * MAX_BOARD_SIZE * MAX_BOARD_SIZE);
-                moveFlip(tempBoard, n, i + 'a', j + 'a', colour);
-                temp[0] = i;
-                temp[1] = j;
-                temp[2] = heuristicScoreevaluation(tempBoard, scoreBoard, n, colour);
-                printf("%c%c %lf\n", i + 'a', j + 'a', temp[2]);
-                //printf("%d%d\n",i,j);
-                if( temp[2] >= bestMove[2] )
-                {
-                    bestMove[0] = temp[0];
-                    bestMove[1] = temp[1];
-                    bestMove[2] = temp[2];
-                }
-            }
-        }
-    }
     memcpy(tempBoard, board, sizeof( char ) * MAX_BOARD_SIZE * MAX_BOARD_SIZE);
     printf("\n");
-    printf("%lf\n", alphaBeta(tempBoard, scoreBoard, 1, -1000000, 1000000, true, 'B', 'W', n));
-    moveFlip(board, n, bestMove[0] + 'a', bestMove[1] + 'a', colour);
-    printf("Computer places %c at %c%c.\n", colour, bestMove[0] + 'a', bestMove[1] + 'a');
+    printf("%lf\n", alphaBeta(tempBoard, scoreBoard, MAX_DEPTH, -INFINITY, INFINITY, true, colour, opColour(colour), n, bestMove));
+    moveFlip(board, n, bestMove[0], bestMove[1], colour);
+    printf("Computer places %c at %c%c.\n", colour, bestMove[0], bestMove[1]);
 }
 
 void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* minCase)
@@ -428,12 +413,13 @@ void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, 
 
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
 {
-    int i, j, counterB = 0, counterW = 0, result = 0;
+    int i, j, counterB = 0, counterW = 0, resultC = 0, resultO = 0;
     for( i = 0; i < n; i++ )
     {
         for( j = 0; j < n; j++ )
         {
-            result = result + legalCases(board, i + 'a', j + 'a', colour, n);
+            resultC = resultC + legalCases(board, i + 'a', j + 'a', colour, n);
+            resultO = resultO + legalCases(board, i + 'a', j + 'a', opColour(colour), n);
             if( board[i][j] == 'B' )
                 counterB++;
             else if( board[i][j] == 'W' )
@@ -450,7 +436,17 @@ bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
             printf("W player wins.\n");
         exit(0);
     }
-    else if( result == 0 )//no valid move
+    else if( resultC == 0 && resultO == 0 )
+    {
+        if( counterB == counterW )
+            printf("Draw!\n");
+        else if( counterB > counterW )
+            printf("B player wins.\n");
+        else if( counterW > counterB )
+            printf("W player wins.\n");
+        exit(0);
+    }
+    else if( resultC == 0 )//no valid move
     {
         printf("%c player has no valid move.\n", colour);
         return false;
@@ -486,7 +482,7 @@ bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, cha
 
 int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int moveList[676][2], bool outputList )
 {
-    int i, j, k=0, counter = 0;
+    int i, j, k = 0, counter = 0;
     for( i = 0; i < n; i++ )
     {
         for( j = 0; j < n; j++ )
@@ -787,7 +783,7 @@ double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int 
     return score;
 }
 
-double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n)
+double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n, char bestMove[2])
 {
     double bestValue;
     if( depth == 0 )
@@ -796,37 +792,48 @@ double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[
     }
     else if( mySelf )
     {
-        int i, j = 0; 
+        int i, j = 0;
+        double bestScore=-INFINITY;
         double childValue;
         bestValue = alpha;
-        int movePosition[8][3]={0};
+        int movePosition[8][3] = {0};
         int moveList[676][2] = {0};
-        j=availableMoves(tempBoard, n, colour, moveList, true);
+        j = availableMoves(tempBoard, n, colour, moveList, true);
         for( i = 0; i < j; i++ )
         {
             flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
-            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n);
+            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n, bestMove);
             bestValue = fmax(bestValue, childValue);
             unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+            if( depth == MAX_DEPTH )
+            {
+                printf("availableMoves update: %c%c\n", moveList[i][0]+'a',moveList[i][1]+'a');
+                if( bestValue > bestScore )
+                {
+                    bestScore=bestValue;
+                    bestMove[0] = moveList[i][0] + 'a';
+                    bestMove[1] = moveList[i][1] + 'a';
+                    printf("Best move update: %c%c\n", bestMove[0],bestMove[1]);
+                }
+            }
             if( beta <= bestValue )
             {
                 break;
             }
         }
-
     }
     else
     {
         int i, j = 0;
         double childValue;
         bestValue = beta;
-        int movePosition[8][3]={0};
+        int movePosition[8][3] = {0};
         int moveList[676][2] = {0};
-        j=availableMoves(tempBoard, n, opColour, moveList, true);
+        j = availableMoves(tempBoard, n, opColour, moveList, true);
         for( i = 0; i < j; i++ )
         {
             flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
-            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n);
+            childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n, bestMove);
             bestValue = fmin(bestValue, childValue);
             unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
             if( alpha >= bestValue )
