@@ -452,15 +452,15 @@ bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
         exit(0);
     }
     else if( resultC == 0 && resultO == 0 )
-    {
-        if( counterB == counterW )
-            printf("Draw!\n");
-        else if( counterB > counterW )
-            printf("B player wins.\n");
-        else if( counterW > counterB )
-            printf("W player wins.\n");
-        exit(0);
-    }
+{
+    if( counterB == counterW )
+        printf("Draw!\n");
+    else if( counterB > counterW )
+        printf("B player wins.\n");
+    else if( counterW > counterB )
+        printf("W player wins.\n");
+    exit(0);
+}
     else if( resultC == 0 )//no valid move
     {
         printf("%c player has no valid move.\n", colour);

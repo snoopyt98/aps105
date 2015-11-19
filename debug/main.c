@@ -3,14 +3,15 @@
 #include <stdbool.h>
 #include <string.h>
 #include <math.h>
-#include <time.h>
-
+#include <sys/time.h>
+#include <sys/resource.h>
+int counterTEST1 = 0;
+int counterTEST2 = 0;
 static const int MAX_DEPTH = 1;
 
 static const int MAX_BOARD_SIZE = 26;
 static const int DELTA[8][2] = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
 
-//static const int INFINITY = 1000000000;//for alpha beta
 /*
      a b c d e f g h
    1 - C B A A B C -
@@ -41,11 +42,12 @@ static const double D_SCORE_RATIO = 1;
 static const int E_SCORE_DEFAULT = 1;
 static const double E_SCORE_RATIO = 1;
 
-
-static const double BOARD_SCORE_CONSTANT = 10;//to be changed
-static const double CORNER_CONSTANT = 10;
-static const double CONRER_STABILITY_CONSTANT = 10;
-static const double MOBILITY_CONSTANT = 10;
+static const double P_RATIO = 0.125;
+static const double C_RATIO = 0.125;
+static const double L_RATIO = 0.125;
+static const double M_RATIO = 0.125;
+static const double F_RATIO = 0.125;
+static const double D_RATIO = 0;
 
 void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
@@ -57,18 +59,18 @@ void flip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][3]
 void unflip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][3], int n, char row, char col, char colour);
 bool positionInBounds(int N, char row, char col);
 int checkLegalInDirection(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int N, char row, char col, char colour, int deltaRow, int deltaCol);
-char computerColour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
+char Colour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
-void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
+void Move(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
-void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* minCase);
 double gameStage(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
-bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char col, char colour);
 int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int moveList[676][2], bool outputList);
 void boardCount(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* boardNum);
 void generateScoreboard(int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n, char bestMove[2]);
+double gameWin(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
+bool gameEnd(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour);
 
 int main(void)
 {
@@ -78,7 +80,7 @@ int main(void)
     scanf("%d", &boardSize);
     boardInitialize(board, boardSize);
     //generateScoreboard(scoreBoard, boardSize); //test
-    gameProcess(board, boardSize, computerColour(board, boardSize));
+    gameProcess(board, boardSize, Colour(board, boardSize));
 }
 
 void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//initialize stardard starting board configuration
@@ -131,7 +133,7 @@ char opColour(char colour)
     return opColour;
 }
 
-char computerColour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+char Colour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
 {
     char colour;
     printf("Computer plays (B/W) : ");
@@ -207,7 +209,7 @@ void userMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
     int i;
     bool caseState = false;
     char userInput[3];
-    printf("Make move for colour %c (Row/Col): ", colour);
+    printf("Enter move for colour %c (RowCol): ", colour);
     for( i = 0; i < 2; i++ )
         scanf(" %c", &userInput[i]);
     if( positionInBounds(n, userInput[0], userInput[1]))
@@ -324,6 +326,30 @@ void unflip(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int movePosition[8][
     }
 }
 
+void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
+{
+    int i, j, counter = 0;
+    int temp[3];
+    int bestMove[3] = {0};
+    for( i = 0; i < n; i++ )
+    {
+        for( j = 0; j < n; j++ )
+        {
+            temp[0] = i;
+            temp[1] = j;
+            temp[2] = legalCases(board, i + 'a', j + 'a', colour, n);
+            if( temp[2] > bestMove[2] )
+            {
+                bestMove[0] = temp[0];
+                bestMove[1] = temp[1];
+                bestMove[2] = temp[2];
+            }
+        }
+    }
+    moveFlip(board, n, bestMove[0] + 'a', bestMove[1] + 'a', colour);
+    printf("Part1 places %c at %c%c.\n", colour, bestMove[0] + 'a', bestMove[1] + 'a');
+}
+
 void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)//the process of playing the game
 {
     bool gameState = true;
@@ -333,11 +359,12 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
         {
             if( checkWin(board, n, 'B') == true )//the if no legal move is considered in the checkWin() function
             {
-                computerMove(board, n, 'B');
+                Move(board, n, 'B');
                 printBoard(board, n);
             }
             if( checkWin(board, n, 'W') == true )
             {
+                //computerMove(board, n, 'W');
                 userMove(board, n, 'W');
                 printBoard(board, n);
             }
@@ -346,69 +373,43 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
         {
             if( checkWin(board, n, 'B') == true )
             {
+                //computerMove(board, n, 'B');
                 userMove(board, n, 'B');
                 printBoard(board, n);
             }
             if( checkWin(board, n, 'W') == true )
             {
-                computerMove(board, n, 'W');
+                Move(board, n, 'W');
                 printBoard(board, n);
             }
         }
     }
 }
 
-void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
+void Move(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
 {
-    int i, j, counter = 0;
+    counterTEST1 = 0;
+    counterTEST2 = 0;
     int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     double temp[3] = {0};
     char bestMove[2] = {0};
-    int minCase[3] = {0, 0, 676};
     char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     generateScoreboard(scoreBoard, n);
-    //printf("%lf\n",alphaBeta(2,-1000000, 1000000, true, 'B', 'W', n));
     memcpy(tempBoard, board, sizeof( char ) * MAX_BOARD_SIZE * MAX_BOARD_SIZE);
-    printf("\n");
-    printf("%lf\n", alphaBeta(tempBoard, scoreBoard, MAX_DEPTH, -INFINITY, INFINITY, true, colour, opColour(colour), n, bestMove));
+    struct rusage usage; // a structure to hold "resource usage" (including time)
+    struct timeval start, end; // will hold the start and end times
+    getrusage(RUSAGE_SELF, &usage);
+    start = usage.ru_utime;
+    double time_start = start.tv_sec + start.tv_usec / 1000000.0; // in seconds
+    alphaBeta(tempBoard, scoreBoard, MAX_DEPTH, -INFINITY, INFINITY, true, colour, opColour(colour), n, bestMove);
+    getrusage(RUSAGE_SELF, &usage);
+    end = usage.ru_utime;
+    double time_end = end.tv_sec + end.tv_usec / 1000000.0; // in seconds
+    double total_time = time_end - time_start;
+// total_time now holds the time (in seconds) it takes to run your code
     moveFlip(board, n, bestMove[0], bestMove[1], colour);
-    printf("Computer places %c at %c%c.\n", colour, bestMove[0], bestMove[1]);
-}
-
-void reduceMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int* minCase)
-{
-    int i, j;
-    int temp[3];
-    char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
-    memcpy(tempBoard, board, sizeof( char ) * MAX_BOARD_SIZE * MAX_BOARD_SIZE);
-
-    char opColour;
-    if( colour == 'B' )
-        opColour = 'W';
-    else if( colour == 'W' )
-        opColour = 'B';
-
-    for( i = 0; i < n; i++ )
-    {
-        for( j = 0; j < n; j++ )
-        {
-            if( legalCases(tempBoard, i + 'a', j + 'a', colour, n) > 0 )
-            {
-                moveFlip(tempBoard, n, i + 'a', j + 'a', colour);
-                temp[2] = availableMoves(tempBoard, n, opColour, NULL, false);
-                //printf("%d\n",temp[2]);
-                temp[0] = i;
-                temp[1] = j;
-                memcpy(tempBoard, board, sizeof( char ) * MAX_BOARD_SIZE * MAX_BOARD_SIZE);
-                if( temp[2] < minCase[2] )
-                {
-                    *minCase = temp[0];
-                    *( minCase + 1 ) = temp[1];
-                    *( minCase + 2 ) = temp[2];
-                }
-            }
-        }
-    }
+    printf("Computer places %c at %c%c. %lf\n", colour, bestMove[0], bestMove[1], total_time);
+    printf("%d %d\n", counterTEST1, counterTEST2);
 }
 
 bool checkWin(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
@@ -468,16 +469,6 @@ double gameStage(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
         }
     }
     return tempCount / maxCount;
-}
-
-
-bool cornerCase(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char row, char col, char colour)
-{
-    //corner [a][a] [a][n-1] [n-1][a] [n-1][n-1]
-    if(( row == 'a' && col == 'a' ) || ( row == 'a' && col == 'a' + n - 1 ) || ( row == 'a' + n - 1 && col == 'a' ) || ( row == 'a' + n - 1 && col == 'a' + n - 1 ))
-        return true;
-    else
-        return false;
 }
 
 int availableMoves(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour, int moveList[676][2], bool outputList )
@@ -596,33 +587,6 @@ void generateScoreboard(int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
             }
         }
     }
-    else if( n == 6 )
-    {
-
-    }
-    else if( n == 4 )
-    {
-
-    }
-    else
-    {
-        printf("Error input dimension!");
-        exit(0);
-    }
-    /*
-       int ii, jj, kk;
-       printf("  ");
-       for( ii = 0; ii < n; ii++ )
-        printf("%c", 'a' + ii);
-       printf("\n");
-       for( jj = 0; jj < n; jj++ )
-       {
-        printf("%c ", 'a' + jj);
-        for( kk = 0; kk < n; kk++ )
-            printf("%d ", scoreBoard[jj][kk]);
-        printf("\n");
-       }
-     */
 }
 
 double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
@@ -674,6 +638,11 @@ double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int 
         p = -( 100.0 * opPieces ) / ( myPieces + opPieces );
     else
         p = 0;
+
+    if( n == 4 || n == 6 )
+    {
+        return myPieces;
+    }
 
     if( myFrontpieces > opFrontpieces )
         f = -( 100.0 * myFrontpieces ) / ( myFrontpieces + opFrontpieces );
@@ -770,7 +739,7 @@ double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int 
 
     // Mobility
     myPieces = availableMoves(board, n, colour, NULL, false);
-    opPieces = availableMoves(board, n, colour, NULL, false);
+    opPieces = availableMoves(board, n, opColour, NULL, false);
     if( myPieces > opPieces )
         m = ( 100.0 * myPieces ) / ( myPieces + opPieces );
     else if( myPieces < opPieces )
@@ -786,39 +755,54 @@ double heuristicScoreevaluation(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int 
 double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int depth, double alpha, double beta, bool mySelf, char colour, char opColour, int n, char bestMove[2])
 {
     double bestValue;
-    if( depth == 0 )
+    //if ( gameEnd(tempBoard, n, colour) )
+    //{
+    //    bestValue = gameWin(tempBoard, n, colour);
+    //    counterTEST1++;
+    //}
+     if( depth == 0 )
     {
         bestValue = heuristicScoreevaluation(tempBoard, scoreBoard, n, colour);
+        printf("%lf\n",bestValue);
+        //counterTEST2++;
     }
     else if( mySelf )
     {
         int i, j = 0;
-        double bestScore=-INFINITY;
+        double bestScore = -INFINITY;
         double childValue;
         bestValue = alpha;
         int movePosition[8][3] = {0};
         int moveList[676][2] = {0};
         j = availableMoves(tempBoard, n, colour, moveList, true);
-        for( i = 0; i < j; i++ )
+        if( j == 0 )
         {
-            flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
             childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n, bestMove);
             bestValue = fmax(bestValue, childValue);
-            unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
-            if( depth == MAX_DEPTH )
+        }
+        else
+        {
+            for( i = 0; i < j; i++ )
             {
-                printf("availableMoves update: %c%c\n", moveList[i][0]+'a',moveList[i][1]+'a');
-                if( bestValue > bestScore )
+                flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+                childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, bestValue, beta, false, colour, opColour, n, bestMove);
+                bestValue = fmax(bestValue, childValue);
+                unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', colour);
+                if( depth == MAX_DEPTH )
                 {
-                    bestScore=bestValue;
-                    bestMove[0] = moveList[i][0] + 'a';
-                    bestMove[1] = moveList[i][1] + 'a';
-                    printf("Best move update: %c%c\n", bestMove[0],bestMove[1]);
+                    printf("availableMoves update: %c%c %lf\n", moveList[i][0] + 'a', moveList[i][1] + 'a', bestValue);
+                    if( bestValue > bestScore )
+                    {
+                        bestScore = bestValue;
+                        bestMove[0] = moveList[i][0] + 'a';
+                        bestMove[1] = moveList[i][1] + 'a';
+                        printf("Best move update: %c%c %lf\n", bestMove[0], bestMove[1], bestScore);
+                    }
                 }
-            }
-            if( beta <= bestValue )
-            {
-                break;
+                if( beta <= bestValue )
+                {
+                    break;
+                }
             }
         }
     }
@@ -830,17 +814,107 @@ double alphaBeta(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int scoreBoard[
         int movePosition[8][3] = {0};
         int moveList[676][2] = {0};
         j = availableMoves(tempBoard, n, opColour, moveList, true);
-        for( i = 0; i < j; i++ )
+        if( j == 0 )
         {
-            flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
             childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n, bestMove);
             bestValue = fmin(bestValue, childValue);
-            unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
-            if( alpha >= bestValue )
+        }
+        else
+        {
+            for( i = 0; i < j; i++ )
             {
-                break;
+                flip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
+                childValue = alphaBeta(tempBoard, scoreBoard, depth - 1, alpha, bestValue, true, colour, opColour, n, bestMove);
+                bestValue = fmin(bestValue, childValue);
+                unflip(tempBoard, movePosition, n, moveList[i][0] + 'a', moveList[i][1] + 'a', opColour);
+                if( alpha >= bestValue )
+                {
+                    break;
+                }
             }
         }
     }
     return bestValue;
+}
+
+double gameWin(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
+{
+    char opColour;
+    if( colour == 'W' )
+        opColour = 'B';
+    else if( colour == 'B' )
+        opColour = 'W';
+    int i, j, counterB = 0, counterW = 0, resultC = 0, resultO = 0;
+    for( i = 0; i < n; i++ )
+    {
+        for( j = 0; j < n; j++ )
+        {
+            resultC = resultC + legalCases(tempBoard, i + 'a', j + 'a', colour, n);
+            resultO = resultO + legalCases(tempBoard, i + 'a', j + 'a', opColour, n);
+            if( tempBoard[i][j] == 'B' )
+                counterB++;
+            else if( tempBoard[i][j] == 'W' )
+                counterW++;
+        }
+    }
+    if( counterB + counterW == n * n )//board full
+    {
+        if( counterB == counterW )
+            return -INFINITY;
+        else if( counterB > counterW )
+        {
+            if( colour == 'B' )
+                return INFINITY;
+        }
+        else if( counterW > counterB )
+        {
+            if( colour == 'W' )
+                return INFINITY;
+        }
+        return -INFINITY;
+    }
+    else if( resultC == 0 && resultO == 0 )
+    {
+        if( counterB == counterW )
+            return -INFINITY;
+        else if( counterB > counterW )
+        {
+            if( colour == 'B' )
+                return INFINITY;
+        }
+        else if( counterW > counterB )
+        {
+            if( colour == 'W' )
+                return INFINITY;
+        }
+        return -INFINITY;
+    }
+}
+
+bool gameEnd(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
+{
+    char opColour;
+    if( colour == 'W' )
+        opColour = 'B';
+    else if( colour == 'B' )
+        opColour = 'W';
+    int i, j, counterB = 0, counterW = 0, resultC = 0, resultO = 0;
+    for( i = 0; i < n; i++ )
+    {
+        for( j = 0; j < n; j++ )
+        {
+            resultC = resultC + legalCases(tempBoard, i + 'a', j + 'a', colour, n);
+            resultO = resultO + legalCases(tempBoard, i + 'a', j + 'a', opColour, n);
+            if( tempBoard[i][j] == 'B' )
+                counterB++;
+            else if( tempBoard[i][j] == 'W' )
+                counterW++;
+        }
+    }
+    if( counterB + counterW == n * n )//board full
+        return true;
+    else if( resultC == 0 && resultO == 0 )
+        return true;
+    else
+        return false;
 }
