@@ -1,9 +1,20 @@
+/* 
+ * File:   Lab7Part1.c
+ * Author: Shizhang Yin (shizhang.yin@mail.utoronto.ca)
+ * Date: November 19, 2015
+ * Course: APS105
+ *     
+ * Summary of File:
+ *       
+ * The program plays reversi with the user while using the greedy method.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
 static const int MAX_BOARD_SIZE = 26;
-static const int DELTA[8][2] = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};
+static const int DELTA[8][2] = {-1, -1, -1, 0, -1, 1, 0, -1, 0, 1, 1, -1, 1, 0, 1, 1};//DELTA VALUEs
 
 void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
 void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n);
@@ -21,7 +32,6 @@ int main(void)
 {
     char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE];
     int boardSize;
-    bool comColour;
     printf("Enter the board dimension: ");
     scanf("%d", &boardSize);
     boardInitialize(board, boardSize);
@@ -34,14 +44,14 @@ void boardInitialize(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//initial
     for( i = 0; i < MAX_BOARD_SIZE; i++ )
     {
         for( j = 0; j < MAX_BOARD_SIZE; j++ )
-            board[i][j] = '\0';
+            board[i][j] = '\0';// fill the board with '\0'
     }
     for( k = 0; k < n; k++ )
     {
         for( m = 0; m < n; m++ )
             board[k][m] = 'U';
     }
-    board[( n / 2 ) - 1][( n / 2 - 1 )] = 'W';
+    board[( n / 2 ) - 1][( n / 2 - 1 )] = 'W';//put down the default 4 pieces
     board[( n / 2 ) - 1][n / 2] = 'B';
     board[n / 2][( n / 2 ) - 1] = 'B';
     board[n / 2][n / 2] = 'W';
@@ -64,7 +74,7 @@ void printBoard(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)//print curren
 
 }
 
-char computerColour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)
+char computerColour(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n)// computer pick colour
 {
     char colour;
     printf("Computer plays (B/W) : ");
@@ -77,7 +87,7 @@ int legalCases(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], char row, char col, c
 {
     int i;
     int result = 0;
-    for( i = 0; i < 8; i++ )
+    for( i = 0; i < 8; i++ )// all 8 DELTA direction
     {
         result = result + checkLegalInDirection(board, n, row, col, colour, DELTA[i][0], DELTA[i][1]);
     }
@@ -137,7 +147,7 @@ void userMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
         bwType = 'B';
     else if( colour == 'B' )
         bwType = 'W';
-    printf("Make move for colour %c (Row/Col): ", colour);
+    printf("Enter move for colour %c (RowCol): ", colour);
     for( i = 0; i < 2; i++ )
         scanf(" %c", &userInput[i]);
     if( positionInBounds(n, userInput[0], userInput[1]))
@@ -202,7 +212,7 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
     bool gameState = true;
     while( gameState == true )
     {
-        if( colour == 'B' )
+        if( colour == 'B' )// com 'B' case
         {
             if( checkWin(board, n, 'B') == true )
             {
@@ -215,7 +225,7 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
                 printBoard(board, n);
             }
         }
-        else if( colour == 'W' )
+        else if( colour == 'W' )//com 'W' case
         {
             if( checkWin(board, n, 'B') == true )
             {
@@ -233,7 +243,8 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
 
 void computerMove(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
 {
-    int i, j, counter = 0;
+    //computer makes greedy move
+    int i, j;
     int temp[3];
     int bestMove[3] = {0};
     for( i = 0; i < n; i++ )
