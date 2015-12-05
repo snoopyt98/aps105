@@ -350,8 +350,8 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
             if( checkWin(board, n, 'W') == true )
             {
                 //Move(board, n, 'W');
-                computerMove(board, n, 'W');
-                //userMove(board, n, 'W');
+                //computerMove(board, n, 'W');
+                userMove(board, n, 'W');
                 printBoard(board, n);
             }
         }
@@ -360,8 +360,8 @@ void gameProcess(char board[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colour)
             if( checkWin(board, n, 'B') == true )
             {
                 //Move(board, n, 'B');
-                computerMove(board, n, 'B');
-                //userMove(board, n, 'B');
+                //computerMove(board, n, 'B');
+                userMove(board, n, 'B');
                 printBoard(board, n);
             }
             if( checkWin(board, n, 'W') == true )
@@ -871,7 +871,6 @@ double gameWin(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colou
             if( colour == 'W' )
                 return INFINITY;
         }
-        printf("-INFINITY");
         return -INFINITY;
     }
 }

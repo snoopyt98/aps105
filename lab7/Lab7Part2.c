@@ -883,7 +883,6 @@ double gameWin(char tempBoard[MAX_BOARD_SIZE][MAX_BOARD_SIZE], int n, char colou
             if( colour == 'W' )
                 return INFINITY;
         }
-        printf("-INFINITY");
         return -INFINITY;
     }
 }

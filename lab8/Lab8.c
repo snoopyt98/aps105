@@ -14,13 +14,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-// A node in the linked list
-
-// Each string in the node is declared as a character pointer variable,
-// so they need to be dynamically allocated using the malloc() function,
-// and deallocated using the free() function after use.
-
-typedef struct node
+typedef struct node//structure node
 {
     char *songName;
     char *artist;
@@ -28,20 +22,11 @@ typedef struct node
     struct node *link;
 } Node;
 
-
-// Declarations of linked list functions
-//
-// Declare your own linked list functions here.
-//
-// ADD YOUR STATEMENT(S) HERE
 Node *insert(Node* root);
 Node *delete(Node* root, char input[]);
 Node *search(Node* root, char input[]);
 Node *print(Node* root);
 void *exitClean(Node* root);
-
-// Declarations of support functions
-// See below the main function for descriptions of what these functions do
 
 void getStringFromUserInput(char s[], int arraySize);
 Node *newNode(char songNamein[], char artistin[], char genrein[], Node *link);
@@ -50,11 +35,8 @@ const int MAX_LENGTH = 1024;
 
 int main(void)
 {
-    Node *root = NULL;
     // Declare the head of the linked list.
-
-    //   ADD YOUR STATEMENT(S) HERE
-
+    Node *root = NULL;
     // Announce the start of the program
     printf("%s", "Personal Music Library.\n\n");
     printf("%s", "Commands are I (insert), D (delete), S (search by song name),\n"
@@ -65,7 +47,7 @@ int main(void)
     do
     {
         printf("\nCommand?: ");
-        getStringFromUserInput(input, 1);
+        getStringFromUserInput(input, MAX_LENGTH);
 
         // Response is the first character entered by user.
         // Convert to uppercase to simplify later comparisons.
@@ -109,16 +91,13 @@ int main(void)
     while ( response != 'Q' );
     if ( root != NULL )
         exitClean(root);
-    printf("\nThe music library is empty.\n");
+    printf("\nThe music library is empty.\n\n");
     return 0;
 }
 
-// Support Function Definitions
-
-// Prompt the user for a string safely, without buffer overflow
-
 void getStringFromUserInput(char s[], int maxStrLength)
 {
+    // Prompt the user for a string safely, without buffer overflow
     int i = 0;
     char c;
 
@@ -132,9 +111,6 @@ Node *insert(Node* root)
 {
     // Insert a song into the linked list.
     // Maintain the list in alphabetical order by song name.
-    //   ADD STATEMENT(S) HERE
-
-    // USE THE FOLLOWING PRINTF STATEMENTS WHEN PROMPTING FOR DATA:
     Node* temp = root;
     char songNamein[MAX_LENGTH + 1];
     char artistin[MAX_LENGTH + 1];
@@ -145,7 +121,7 @@ Node *insert(Node* root)
     getStringFromUserInput(artistin, MAX_LENGTH);
     printf("Genre: ");
     getStringFromUserInput(genrein, MAX_LENGTH);
-    if ( root == NULL )
+    if ( root == NULL )//when root is empty
     {
         root = newNode(songNamein, artistin, genrein, NULL);
         return root;
@@ -155,18 +131,18 @@ Node *insert(Node* root)
         int counter = 0;
         Node* temp1 = root;
         Node* temp2 = root->link;
-        while ( temp != NULL )
+        while ( temp != NULL )//determine is the input is a duplicate
         {
             if ( strcmp(temp->songName, songNamein) == 0 )
             {
-                printf("A song with the name ’%s’ is already in the music library. No new song entered.\n", songNamein);
+                printf("A song with the name '%s' is already in the music library. No new song entered.\n", songNamein);
                 return root;
             }
             temp = temp->link;
         }
         while ( temp1 != NULL )
         {
-            if (( strcmp(temp1->songName, songNamein) > 0 ) && ( counter == 0 ))
+            if (( strcmp(temp1->songName, songNamein) > 0 ) && ( counter == 0 ))//place before first node case
             {
                 root = newNode(songNamein, artistin, genrein, temp1);
                 return root;
@@ -194,19 +170,19 @@ Node *delete(Node* root, char input[])
         printf("\nThe music library is empty.\n");
         return root;
     }
-    else if ( strcmp(root->songName, input) == 0 )
+    else if ( strcmp(root->songName, input) == 0 )//first node case
     {
         Node* temp = root->link;
         free(root->songName);
         free(root->artist);
         free(root->genre);
         free(root);
-        printf("\nDeleting a song with name ’%s’ from the music library.\n", input);
+        printf("\nDeleting a song with name '%s' from the music library.\n", input);
         return temp;
     }
     Node* previous = root;
     Node* current = root->link;
-    while ( current != NULL )
+    while ( current != NULL )// all the nodes afterward
     {
         if ( strcmp(current->songName, input) == 0 )
         {
@@ -215,13 +191,13 @@ Node *delete(Node* root, char input[])
             free(current->artist);
             free(current->genre);
             free(current);
-            printf("\nDeleting a song with name ’%s’ from the music library.\n", input);
+            printf("\nDeleting a song with name '%s' from the music library.\n", input);
             return root;
         }
         previous = previous->link;
         current = current->link;
     }
-    printf("\nThe song name ’%s’ was not found in the music library.\n", input);
+    printf("\nThe song name '%s' was not found in the music library.\n", input);
     return root;
 }
 
@@ -247,7 +223,7 @@ Node *search(Node* root, char input[])
     {
         if ( strcmp(temp->songName, input) == 0 )
         {
-            printf("\nThe song name ’%s’ was found in the music library.\n\n", input);
+            printf("\nThe song name '%s' was found in the music library.\n\n", input);
             printf("%s\n", temp->songName);
             printf("%s\n", temp->artist);
             printf("%s\n", temp->genre);
@@ -260,16 +236,16 @@ Node *search(Node* root, char input[])
     return root;
 }
 
-Node *print(Node* root)
+Node *print(Node* root)//print the current library
 {
-    printf("\n");
-    printf("My Personal Music Library: \n");
     Node* temp = root;
     if ( temp == NULL )
     {
         printf("\nThe music library is empty.\n");
         return root;
     }
+    printf("\n");
+    printf("My Personal Music Library: \n");
     while ( temp != NULL )
     {
         printf("\n");
@@ -281,12 +257,12 @@ Node *print(Node* root)
     return root;
 }
 
-void *exitClean(Node* root)
+void *exitClean(Node* root)//free every allocated space
 {
     if ( root != NULL )
     {
-        printf("\nDeleting a song with name ’%s’ from the music library.\n", root->songName);
-        exitClean(root->link);
+        printf("\nDeleting a song with name '%s' from the music library.\n", root->songName);
+        exitClean(root->link);//recursive call
         free(root->songName);
         free(root->artist);
         free(root->genre);
